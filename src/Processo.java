@@ -7,7 +7,7 @@ public class Processo {
     Processo (int burst, int io, String nome){
         this.burst = burst;
         this.qtd_io = io;
-        this.nome = nome;
+        this.nome = "P" + nome;
         this.tempo_Q1 = this.tempo_io = this.tempo_executado = 0;
     }
 
@@ -28,20 +28,20 @@ public class Processo {
             p.qtd_io--;
             io.add(p);
         }
+        if (this.tempo_executado == this.burst && this.qtd_io==0)
+            filas.poll();
     }
 
     public void toFCFS(Queue<Processo> rr, Queue<Processo> fcfs) {
-        if (this.tempo_executado == 20){
+        if (this.tempo_executado == 10){
             Processo p = rr.poll();
-            p.tempo_executado = 0;
             fcfs.add(p);
         }
     }
 
     public void toRR(Queue<Processo> fcfs, Queue<Processo> rr) {
-        if (this.tempo_Q1 > 25){
-            Processo p;
-            p = fcfs.poll();
+        if (this.tempo_Q1 == 30){
+            Processo p = fcfs.poll(); //arrumar para poder pegar o segundo elemento
             p.tempo_Q1=0;
             rr.add(p);
         }
@@ -49,8 +49,10 @@ public class Processo {
 
     public void executaIO(Queue<Processo> io, Queue<Processo> rr) {
         this.tempo_io++;
-        if (this.tempo_io == 30) {
+        if (this.tempo_io == 20) {
             Processo p = io.poll();
+            p.tempo_io = 0;
+            p.tempo_executado = 0;
             rr.add(p);
         }
     }

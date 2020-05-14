@@ -8,6 +8,9 @@ public class Auxiliares {
     }
 
     public static void imprime(Processo processo_atual, int tempo) {
-        System.out.print(processo_atual.getnome() + "--" + tempo);
+        if (processo_atual == null)
+            System.out.print("----" + tempo);
+        else
+            System.out.print(processo_atual.getnome() + "--" + tempo);
     }
 }
