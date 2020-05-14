@@ -2,9 +2,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
+
 public class Escalonamento {
 
     public static void main(String[] args) {
+
         int tempo=0;
         int qtd_processos;
         int duracao;
@@ -23,6 +25,12 @@ public class Escalonamento {
             processo_atual = new Processo(duracao, qtd_io, Integer.toString(i + 1));
             rr.add(processo_atual);
         }
+        //*** SOMENTE PARA TESTES
+        for (Processo pr : rr){
+            pr.imprimeprocesso();
+        }
+
+        System.out.print("Diagrama de Gantt:\n" + tempo + "--");
 
         while (Auxiliares.filanaovazia(rr,fcfs,io)){
 
@@ -32,19 +40,20 @@ public class Escalonamento {
                 processo_atual.toIO(rr, io);
                 processo_atual.toFCFS(rr, fcfs);
             }
-            else {
+            else if (fcfs.peek() != null){
                 processo_atual = fcfs.peek();
                 processo_atual.executa();
                 processo_atual.toIO(fcfs, io);
                 processo_atual.toRR(fcfs, rr);
             }
             Auxiliares.executaIO(io,rr);
-            tempo++;
-            ///Chegar se precisa imprimir, tem que pensar em como vai fazer
-            Auxiliares.imprime(processo_atual,tempo);
 
+            ///Checar se precisa imprimir, tem que pensar em como vai fazer
+            Auxiliares.imprime(processo_atual,tempo);
+            tempo++;
         }
 
+        System.out.print("--" + tempo);
 
 
 

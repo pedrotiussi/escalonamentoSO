@@ -21,12 +21,29 @@ public class Processo {
     }
 
 
-    public void toIO(Queue<Processo> rr, Queue<Processo> io) {
+    public void toIO(Queue<Processo> filas, Queue<Processo> io) {
+        if (this.tempo_executado == this.burst && this.qtd_io > 0){
+            Processo p = filas.poll();
+            p.tempo_executado = 0;
+            p.qtd_io--;
+            io.add(p);
+        }
     }
 
     public void toFCFS(Queue<Processo> rr, Queue<Processo> fcfs) {
+        if (this.tempo_executado == 20){
+            Processo p = rr.poll();
+            p.tempo_executado = 0;
+            fcfs.add(p);
+        }
     }
 
     public void toRR(Queue<Processo> fcfs, Queue<Processo> rr) {
+        if (this.tempo_Q1 > 25){
+            Processo p;
+            p = fcfs.poll();
+            p.tempo_Q1=0;
+            rr.add(p);
+        }
     }
 }
