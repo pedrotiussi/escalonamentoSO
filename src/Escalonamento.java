@@ -34,19 +34,24 @@ public class Escalonamento {
 
         while (Auxiliares.filanaovazia(rr,fcfs,io)){
 
+            processo_atual = io.peek();
+            if (processo_atual != null){
+                processo_atual.executaIO(io, rr);
+            }
             processo_atual= rr.peek();
             if (processo_atual != null){
                 processo_atual.executa();
                 processo_atual.toIO(rr, io);
                 processo_atual.toFCFS(rr, fcfs);
             }
-            else if (fcfs.peek() != null){
+
+            if (fcfs.peek() != null){
                 processo_atual = fcfs.peek();
                 processo_atual.executa();
                 processo_atual.toIO(fcfs, io);
                 processo_atual.toRR(fcfs, rr);
             }
-            Auxiliares.executaIO(io,rr);
+
 
             ///Checar se precisa imprimir, tem que pensar em como vai fazer
             Auxiliares.imprime(processo_atual,tempo);

@@ -46,4 +46,16 @@ public class Processo {
             rr.add(p);
         }
     }
+
+    public void executaIO(Queue<Processo> io, Queue<Processo> rr) {
+        this.tempo_io++;
+        if (this.tempo_io == 30) {
+            Processo p = io.poll();
+            rr.add(p);
+        }
+    }
+
+    public String getnome() {
+        return nome;
+    }
 }
