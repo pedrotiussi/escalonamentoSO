@@ -1,23 +1,30 @@
+import java.util.ArrayList;
 import java.util.Queue;
 
+
 public class Processo {
-    private int burst, qtd_io, tempo_Q1, tempo_executado, tempo_io;
+    private int burst, qtd_io, espera_Q1, tempo_executado, tempo_io, executado_Q0;
     private String nome;
 
     Processo (int burst, int io, String nome){
         this.burst = burst;
         this.qtd_io = io;
         this.nome = "P" + nome;
-        this.tempo_Q1 = this.tempo_io = this.tempo_executado = 0;
+        this.espera_Q1 = this.tempo_io = this.tempo_executado = this.executado_Q0 = 0;
     }
 
-    public void imprimeprocesso (){ ///usado somente para teste
-        System.out.println("Nome: " + nome + "quantidade de IO: " + qtd_io + "Tempo de Burst: " + burst + "Tempo: "
-                            + tempo_Q1 + tempo_executado + tempo_io);
+    public static void atualizaQ1(ArrayList<Processo> fcfs) {
+        Processo p;
+        for (int i = 0; i < fcfs.size(); i++){
+            p = fcfs.get(i);
+            p.espera_Q1++;
+        }
     }
 
-    public void executa() {
+
+    public void executarr() {
         this.tempo_executado++;
+        this.executado_Q0++;
     }
 
 
@@ -28,22 +35,44 @@ public class Processo {
             p.qtd_io--;
             io.add(p);
         }
-        if (this.tempo_executado == this.burst && this.qtd_io==0)
+        if (this.tempo_executado == this.burst && this.qtd_io==0) {
+            this.tempo_executado = 0;
             filas.poll();
+        }
     }
 
-    public void toFCFS(Queue<Processo> rr, Queue<Processo> fcfs) {
-        if (this.tempo_executado == 10){
+    public void toIO(ArrayList<Processo> filas, Queue<Processo> io) {
+        if (this.tempo_executado == this.burst && this.qtd_io > 0){
+            Processo p = filas.get(0);
+            filas.remove(p);
+            p.tempo_executado = 0;
+            p.espera_Q1 = 0;
+            p.executado_Q0 = 0;
+            p.qtd_io--;
+            io.add(p);
+        }
+        if (this.tempo_executado == this.burst && this.qtd_io==0) {
+            filas.get(0);
+            filas.remove(0);
+        }
+    }
+    public void toFCFS(Queue<Processo> rr, ArrayList<Processo> fcfs) {
+        if (this.executado_Q0 == 10 && rr.peek() != null){
             Processo p = rr.poll();
             fcfs.add(p);
         }
     }
 
-    public void toRR(Queue<Processo> fcfs, Queue<Processo> rr) {
-        if (this.tempo_Q1 == 30){
-            Processo p = fcfs.poll(); //arrumar para poder pegar o segundo elemento
-            p.tempo_Q1=0;
-            rr.add(p);
+    public static void toRR(ArrayList<Processo> fcfs, Queue<Processo> rr) {
+        for (int i=0; i < fcfs.size(); i++){
+            Processo p = fcfs.get(i);
+            if (p.espera_Q1 == 30){
+                fcfs.remove(p);
+                p.espera_Q1 = 0;
+                p.executado_Q0 = 0;
+                rr.add(p);
+                break;
+            }
         }
     }
 
@@ -59,5 +88,13 @@ public class Processo {
 
     public String getnome() {
         return nome;
+    }
+
+    public void settempo_q1(int i) {
+        this.espera_Q1 = i;
+    }
+
+    public void executafcfs() {
+        this.tempo_executado++;
     }
 }
