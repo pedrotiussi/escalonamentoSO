@@ -49,13 +49,16 @@ public class Escalonamento {
                     imprimiu = true;
                 }
             }
+
             Processo temporaria = processo_atual;
             processo_atual = rr.peek();
 
+
             if (rr.peek() != null) {
                 processo_atual.executarr();
-                if (!processo_atual.toIO(rr, io))
+                if (!processo_atual.toIO(rr, io)) {
                     processo_atual.toFCFS(rr, fcfs);
+                }
                 if (processo_anterior != processo_atual) {
                     Auxiliares.imprime(processo_anterior, tempo);
                     imprimiu = true;
@@ -66,26 +69,28 @@ public class Escalonamento {
                 processo_io.executaIO(io, rr);
             }
 
+
+            // Se Q0 for vazia e Q1 tiver processo na fila, devemos ter como processo atual aquele de Q1,
+            // que está salva na variável temporaria
+            // Esse if se fez necessário para tratar os casos de impressão do diagrama de Gantt.
+            if (processo_atual == null && temporaria != null) {
+                processo_atual = temporaria;
+                imprimiu = false;
+            }
+
             if (!fcfs.isEmpty()) {
                 Processo.atualizaQ1(fcfs);
                 Processo.toRR(fcfs, rr);
             }
 
-            // Se Q0 for vazia e Q1 tiver processo na fila, devemos ter como processo atual aquele de Q1,
-            // que está salva na variável temporaria
-            // Esse if se fez necessário para tratar os casos de impressão do diagrama de Gantt.
-            if (processo_atual == null && !fcfs.isEmpty()) {
-                processo_atual = temporaria;
-                imprimiu = false;
-            }
-
             if (!imprimiu && processo_anterior != null && processo_atual == null) {
-                Auxiliares.imprime(processo_anterior, tempo + 1);
+                Auxiliares.imprime(processo_anterior, tempo);
             }
 
             processo_anterior = processo_atual;
             tempo++;
         }
+        System.out.println(processo_anterior.getnome() + "--" + tempo);
 
     }
 

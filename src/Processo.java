@@ -32,14 +32,20 @@ public class Processo {
         if (this.tempo_executado == this.burst && this.qtd_io > 0){
             Processo p = rr.poll();
             p.tempo_executado = 0;
+            p.executado_Q0 = 0;
+            p.espera_Q1 = 0;
+            p.tempo_io = 0;
             p.qtd_io--;
             io.add(p);
             return true;
         }
         if (this.tempo_executado == this.burst && this.qtd_io==0) {
-            this.tempo_executado = 0;
-            rr.poll();
-            return false;
+            Processo p = rr.poll();
+            p.tempo_executado = 0;
+            p.executado_Q0 = 0;
+            p.espera_Q1 = 0;
+            p.tempo_io = 0;
+            return true;
         }
         return false;
     }
@@ -49,22 +55,29 @@ public class Processo {
             Processo p = fcfs.get(0);
             fcfs.remove(p);
             p.tempo_executado = 0;
-            p.espera_Q1 = 0;
             p.executado_Q0 = 0;
+            p.espera_Q1 = 0;
+            p.tempo_io = 0;
             p.qtd_io--;
             io.add(p);
             return true;
         }
         if (this.tempo_executado == this.burst && this.qtd_io==0) {
-            fcfs.get(0);
+            Processo p = fcfs.get(0);
+            p.tempo_executado = 0;
+            p.executado_Q0 = 0;
+            p.espera_Q1 = 0;
+            p.tempo_io = 0;
             fcfs.remove(0);
-            return false;
+            return true;
         }
         return false;
     }
+
     public boolean toFCFS(Queue<Processo> rr, ArrayList<Processo> fcfs) {
         if (this.executado_Q0 == 10 && rr.peek() != null){
             Processo p = rr.poll();
+            p.executado_Q0 = 0;
             fcfs.add(p);
             return true;
         }
