@@ -3,7 +3,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
-
 public class Escalonamento {
 
     public static void main(String[] args) {
@@ -24,34 +23,43 @@ public class Escalonamento {
         for (int i = 0; i < qtd_processos; i++) {
             duracao = in.nextInt();
             qtd_io = in.nextInt();
-            processo_atual = new Processo(duracao, qtd_io, Integer.toString(i + 1));
+            processo_atual = new Processo(duracao, qtd_io, Integer.toString(i));
             rr.add(processo_atual);
         }
 
-        System.out.print("\n\n\n***Diagrama de Gantt***\n\n\n");
+        Processo processo_anterior;
+        boolean imprimiu;
+        processo_anterior = processo_atual = rr.peek();
+        System.out.print("\n\n***Diagrama de Gantt***\n\n\n" + tempo + "--");
 
         while (Auxiliares.filanaovazia(rr,fcfs,io)) {
 
             processo_io = io.peek();
+            imprimiu = false;
+
+            processo_atual = rr.peek();
 
             if (!fcfs.isEmpty() && rr.peek() == null) {
                 processo_atual = fcfs.get(0);
                 processo_atual.executafcfs();
                 processo_atual.settempo_q1(0);
                 processo_atual.toIO(fcfs, io);
+                if (processo_anterior != processo_atual) {
+                    Auxiliares.imprime(processo_anterior, tempo);
+                    imprimiu = true;
+                }
             }
-
+            Processo temporaria = processo_atual;
             processo_atual = rr.peek();
-            // Se Q0 for vazia e Q1 tiver processo na fila, devemos ter como processo atual aquele de Q1.
-            // Esse if se fez necessário para tratar os casos de impressão do diagrama de Gantt.
-            if (processo_atual == null && !fcfs.isEmpty()) {
-                processo_atual = fcfs.get(0);
-            }
 
             if (rr.peek() != null) {
                 processo_atual.executarr();
-                processo_atual.toIO(rr, io);
-                processo_atual.toFCFS(rr, fcfs);
+                if (!processo_atual.toIO(rr, io))
+                    processo_atual.toFCFS(rr, fcfs);
+                if (processo_anterior != processo_atual) {
+                    Auxiliares.imprime(processo_anterior, tempo);
+                    imprimiu = true;
+                }
             }
 
             if (processo_io != null) {
@@ -62,15 +70,23 @@ public class Escalonamento {
                 Processo.atualizaQ1(fcfs);
                 Processo.toRR(fcfs, rr);
             }
-            
-            /// ESSA DESGRAÇA TÁ ERRADA!!!!! MALDITO IMPRIME DOS INFERNOS
-            if (tempo % 10 == 0) {
-                Auxiliares.imprime(processo_atual, tempo);
+
+            // Se Q0 for vazia e Q1 tiver processo na fila, devemos ter como processo atual aquele de Q1,
+            // que está salva na variável temporaria
+            // Esse if se fez necessário para tratar os casos de impressão do diagrama de Gantt.
+            if (processo_atual == null && !fcfs.isEmpty()) {
+                processo_atual = temporaria;
+                imprimiu = false;
             }
+
+            if (!imprimiu && processo_anterior != null && processo_atual == null) {
+                Auxiliares.imprime(processo_anterior, tempo + 1);
+            }
+
+            processo_anterior = processo_atual;
             tempo++;
         }
 
-        System.out.print(tempo);
     }
 
 }
