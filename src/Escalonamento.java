@@ -28,8 +28,9 @@ public class Escalonamento {
         }
 
         Processo processo_anterior;
-        boolean imprimiu;
+        boolean imprimiu, imprimiu_em_Q0;
         processo_anterior = processo_atual = rr.peek();
+        imprimiu_em_Q0 = false;
         System.out.print("\n\n***Diagrama de Gantt***\n\n\n" + tempo + "--");
 
         while (Auxiliares.filanaovazia(rr,fcfs,io)) {
@@ -47,6 +48,11 @@ public class Escalonamento {
                 if (processo_anterior != processo_atual) {
                     Auxiliares.imprime(processo_anterior, tempo);
                     imprimiu = true;
+                    imprimiu_em_Q0 = false;
+                }
+                if (processo_anterior == processo_atual && imprimiu_em_Q0){
+                    Auxiliares.imprime(processo_anterior, tempo);
+                    imprimiu_em_Q0 = false;
                 }
             }
 
@@ -62,6 +68,7 @@ public class Escalonamento {
                 if (processo_anterior != processo_atual) {
                     Auxiliares.imprime(processo_anterior, tempo);
                     imprimiu = true;
+                    imprimiu_em_Q0 = true;
                 }
             }
 
